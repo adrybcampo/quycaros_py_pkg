@@ -20,6 +20,11 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "emotion_control = quycaros_py_pkg.emotion_control:main",
+            "main_control = quycaros_py_pkg.main_control:main",
+            "navigation = quycaros_py_pkg.navigation:main",
+            "states_server = quycaros_py_pkg.states_server:main",
+            "video_capture = quycaros_py_pkg.video_capture:main"
         ],
     },
 )

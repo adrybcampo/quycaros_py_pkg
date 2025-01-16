@@ -1,6 +1,6 @@
 import rclpy 
 from rclpy.node import Node 
-from quyca_ros_pkg.srv import GetVariable, SetVariable 
+from quycaros_pkg.srv import GetVariable, SetVariable 
 
 class StatesServer(Node): 
 
