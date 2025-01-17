@@ -13,7 +13,7 @@ class EmotionControl(Node):
         self.new_emotion = [0,0]
         self.animation = []
         self.get_logger().info("emotion control node is running")
-        # self.serial_coms = serial.Serial('/dev/ttyUSB0', 9600)
+        self.serial_coms = serial.Serial('/dev/ttyUSB0', 9600)
 
  
     def listener_callback(self, msg): 
@@ -66,11 +66,9 @@ class EmotionControl(Node):
         self.get_logger().info(str(self.animation))
         self.animation = []
         self.current_emotion = self.new_emotion
-
-
-        # data = 'Hello, world!'
-        # data_bytes = data.encode('utf-8')
-        # self.serial_coms.write(data_bytes)
+        data = '<1000>'
+        data_bytes = data.encode('utf-8')
+        self.serial_coms.write(data_bytes)
         
 def main(args=None): 
     rclpy.init(args=args) 
