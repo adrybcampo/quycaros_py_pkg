@@ -13,6 +13,7 @@ class MainControl(Node):
         self.publisher_ = self.create_publisher(String, '/control_msg', 10) 
         self.client_get = self.create_client(GetVariable, 'get_variable') 
         self.client_set = self.create_client(SetVariable, 'set_variable') 
+        self.get_logger().info("main control node is running")
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
         self.sock.bind(('localhost', 12345)) 
         self.sock.listen(1) 

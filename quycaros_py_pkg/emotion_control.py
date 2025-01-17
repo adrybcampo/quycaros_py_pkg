@@ -1,6 +1,6 @@
 import rclpy 
 from rclpy.node import Node 
-from std_msgs.msg import String 
+from quycaros_pkg.msg import ControlMsg
 import serial 
 
  
@@ -8,33 +8,70 @@ class EmotionControl(Node):
 
     def __init__(self): 
         super().__init__('emotion_control') 
-        self.subscription = self.create_subscription(String, '/control_msg', self.listener_callback, 10) 
-        self.serial_conn = serial.Serial('/dev/ttyUSB0', 9600) 
-        self.last_emotion = [0, 0] 
+        self.subscription = self.create_subscription(ControlMsg, '/control_msg', self.listener_callback, 10) 
+        self.current_emotion = [3,4]
+        self.new_emotion = [0,0]
+        self.animation = []
+        self.get_logger().info("emotion control node is running")
+        # self.serial_coms = serial.Serial('/dev/ttyUSB0', 9600)
 
  
     def listener_callback(self, msg): 
-        data = msg.data.split(',') 
-        if data[0] == 'emotion': 
-            new_emotion = [int(data[1]), int(data[2])] 
-            self.animate_emotion(self.last_emotion, new_emotion) 
-            self.last_emotion = new_emotion 
+        self.new_emotion = [msg.emo_x, msg.emo_y]
+        self.calculate_animation()
 
- 
-    def animate_emotion(self, start, end): 
-        # Logic to determine the path from start to end in the 7x7 matrix 
-        path = self.calculate_path(start, end) 
-        for point in path: 
-            self.serial_conn.write(f'{point[0]},{point[1]}'.encode('utf-8')) 
+    def calculate_animation(self):
+        dif = [self.new_emotion[0] - self.current_emotion[0], self.new_emotion[1] - self.current_emotion[1]]
+        i = self.current_emotion[0]
+        j = self.current_emotion[1]
+        a = 0
+        b = 0
+        c = abs(dif[0]) + abs(dif[1])
 
- 
-    def calculate_path(self, start, end): 
-        # Simplified logic for determining path 
-        path = [start, end]  # For illustration, direct move 
-        return path 
+        while (a < c):
+            b = 0
+            if (dif[1] > 0):
+                if (j < self.new_emotion[1]):
+                    j += 1
+                    face = "(" + str(i) + "," + str(j) + ")"
+                    self.animation.append(face)
+                    b += 1
+                if (dif[0] > 0 and i < self.new_emotion[0]):
+                    i += 1
+                    face = "(" + str(i) + "," + str(j) + ")"
+                    self.animation.append(face)
+                    b += 1
+                elif (dif[0] < 0 and i > self.new_emotion[0]):
+                    i -= 1
+                    face = "(" + str(i) + "," + str(j) + ")"
+                    self.animation.append(face)
+                    b += 1
+            else:
+                if (dif[0] > 0 and i < self.new_emotion[0]):
+                    i += 1
+                    face = "(" + str(i) + "," + str(j) + ")"
+                    self.animation.append(face)
+                    b += 1
+                elif (dif[0] < 0 and i > self.new_emotion[0]):
+                    i -= 1
+                    face = "(" + str(i) + "," + str(j) + ")"
+                    self.animation.append(face)
+                    b += 1
+                if (j > self.new_emotion[1]):
+                    j -= 1
+                    face = "(" + str(i) + "," + str(j) + ")"
+                    self.animation.append(face)
+                    b += 1
+            a += b
+        self.get_logger().info(str(self.animation))
+        self.animation = []
+        self.current_emotion = self.new_emotion
 
- 
 
+        # data = 'Hello, world!'
+        # data_bytes = data.encode('utf-8')
+        # self.serial_coms.write(data_bytes)
+        
 def main(args=None): 
     rclpy.init(args=args) 
     node = EmotionControl() 
