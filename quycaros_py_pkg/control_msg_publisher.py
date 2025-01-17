@@ -12,7 +12,7 @@ class ControlMsgPublisherNode(Node):
         super().__init__("control_msg_publisher")
         self.control_msg_publisher_ = self.create_publisher(ControlMsg, "control_msg", 10)
         self.timer_ = self.create_timer(30.0, self.publish_control_msg)
-        self.get_logger().info("Hardware Status Publisher has been started")
+        self.get_logger().info("Control Msg Publisher has been started")
 
     def publish_control_msg(self):
           list1 = [0, 1, 2, 3, 4, 5, 6]
