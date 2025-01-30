@@ -12,6 +12,7 @@ class EmotionControl(Node):
         self.current_emotion = [3,4]
         self.new_emotion = [0,0]
         self.animation = ""
+        self.claw_state = 0
         self.get_logger().info("emotion control node is running")
         self.serial_coms = serial.Serial('/dev/ttyUSB0', 9600)
 
@@ -19,6 +20,12 @@ class EmotionControl(Node):
     def listener_callback(self, msg): 
         self.new_emotion = [msg.emo_x, msg.emo_y]
         self.calculate_animation()
+        if (self.claw_state != msg.claw):
+            data = '<EM:c(' + msg.claw + ')>'
+            data_bytes = data.encode('utf-8')
+            self.serial_coms.write(data_bytes)
+            self.claw_state = msg.claw
+
 
     def calculate_animation(self):
         dif = [self.new_emotion[0] - self.current_emotion[0], self.new_emotion[1] - self.current_emotion[1]]

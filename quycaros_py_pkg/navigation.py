@@ -1,44 +1,44 @@
 import rclpy 
 from rclpy.node import Node 
-from std_msgs.msg import String 
+from quycaros_pkg.msg import ControlMsg
 import serial 
 
-
 class Navigation(Node): 
-    def __init__(self): 
-        super().__init__('navigation') 
-        self.subscription = self.create_subscription(String, '/control_msg', self.listener_callback, 10) 
-        self.serial_conn = serial.Serial('/dev/ttyUSB1', 9600) 
 
+    def __init__(self): 
+        super().__init__('emotion_control') 
+        self.subscription = self.create_subscription(ControlMsg, '/control_msg', self.listener_callback, 10) 
+        self.current_emotion = [3,4]
+        self.new_emotion = [0,0]
+        self.animation = ""
+        self.claw_state = 0
+        self.get_logger().info("navigation node is running")
+        self.serial_coms = serial.Serial('/dev/ttyUSB0', 9600)
 
     def listener_callback(self, msg): 
-        data = msg.data.split(',') 
-        if len(data) < 6: 
-            return 
 
-        mode = int(data[0]) 
-        mov_x = int(data[1]) 
-        mov_y = int(data[2]) 
-        emo_y = int(data[4]) 
-
-        if mode == 0: 
+        if msg.mode == 0: 
             # Teleoperation mode 
-            command = f'TO:({mov_x},{mov_y})' 
-            self.serial_conn.write(command.encode('utf-8')) 
-        elif mode == 1: 
+            data = '<TO:(' + msg.mov_x + msg.mov_y + ')>'
+            data_bytes = data.encode('utf-8')
+            self.serial_coms.write(data_bytes)
+
+        elif msg.mode == 1: 
             # Line follower mode 
-            if mov_x == 0 and mov_y == 0: 
-                command = 'LF:s(0,0)' 
-            elif mov_x != 0 and mov_y == 0: 
-                command = f'LF:m({mov_x},{emo_y + 1})' 
-            elif mov_x == 0 and mov_y in [-1, 1]: 
-                direction = 'I' if mov_y == -1 else 'D' 
-                command = f'LF:t({direction},{emo_y + 1})' 
+            if msg.mov_x == 0 and msg.mov_y == 0: 
+                data = '<LF:s>'
+            elif msg.mov_x != 0 and msg.mov_y == 0: 
+                data = '<LF:m(' + msg.mov_x + ',' + (msg.emo_x+ 1) +')>'
+            elif msg.mov_x == 0 and (msg.mov_y == 1 or msg.mov_y == -1): 
+                direction = 'I' if msg.mov_y == -1 else 'D'
+                data = '<LF:t(' + direction + ',' + (msg.emo_x+ 1) + ')>' 
             else: 
                 # Invalid condition for mov_x and mov_y 
                 self.get_logger().error('Invalid mov_x and mov_y combination') 
                 return 
-            self.serial_conn.write(command.encode('utf-8')) 
+            self.get_logger().info("Message sent: " + data)
+            data_bytes = data.encode('utf-8')
+            self.serial_coms.write(data_bytes)
 
  
 def main(args=None): 
