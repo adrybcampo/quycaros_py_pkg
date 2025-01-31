@@ -24,8 +24,7 @@ setup(
             "main_control = quycaros_py_pkg.main_control:main",
             "navigation = quycaros_py_pkg.navigation:main",
             "states_server = quycaros_py_pkg.states_server:main",
-            "control_msg_publisher = quycaros_py_pkg.control_msg_publisher:main",
-            "video_capture = quycaros_py_pkg.video_capture:main"
+            "control_msg_publisher = quycaros_py_pkg.control_msg_publisher:main"
         ],
     },
 )
