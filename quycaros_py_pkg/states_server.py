@@ -10,7 +10,7 @@ class StatesServer(Node):
         self.srv_get = self.create_service(GetVariable, 'get_variable', self.get_variable_callback) 
         self.srv_set = self.create_service(SetVariable, 'set_variable', self.set_variable_callback) 
         self.srv_set = self.create_service(SetEmotion, 'set_emotion', self.set_emotion_callback) 
-        self.get_logger().info("Hello Py Node!")
+        self.get_logger().info("States Server Node is running!")
         self.variables = { 
             'emotion': [3,4], 
             'cam_state': 1,
@@ -24,7 +24,7 @@ class StatesServer(Node):
 
         if variable in self.variables: 
             response.value = self.variables[variable]
-
+            self.get_logger().info("response sent")
         else: 
             self.get_logger().error(f"Variable {variable} not found") 
 

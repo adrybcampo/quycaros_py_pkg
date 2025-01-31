@@ -15,11 +15,24 @@ class MainControl(Node):
         self.client_set = self.create_client(SetVariable, 'set_variable') 
         self.get_logger().info("main control node is running")
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind(("localhost", 12345)) 
-        self.sock.listen() # number of connections allowed
+        self.sock.listen()
         self.conn, self.addr = self.sock.accept()  
         self.get_logger().info('Socket connection established')
-        self.timer = self.create_timer(0.1, self.socket_listener) 
+        self.conn.sendall(b'ping')
+        self.socket_listener()
+        self.timer_ = self.create_timer(10.0, self.check_socket_connection)
+
+    def check_socket_connection(self):
+        try:
+            self.conn.sendall(b'ping')
+        except Exception as e:
+            self.conn, self.addr = self.sock.accept()  
+            self.get_logger().info('Socket connection established')
+            self.conn.sendall(b'ping')
+            self.socket_listener()
+
 
     def socket_listener(self): 
 
@@ -49,7 +62,7 @@ class MainControl(Node):
         try: 
             response = future.result() 
             self.conn.sendall(f'{response.value}'.encode('utf-8')) 
-
+            self.socket_listener()
         except Exception as e: 
             self.get_logger().error(f'Get service call failed {e}') 
 
@@ -114,7 +127,8 @@ def main(args=None):
     node = MainControl() 
     rclpy.spin(node) 
     node.destroy_node() 
-    rclpy.shutdown() 
+    rclpy.shutdown()
+    
 
 if __name__ == '__main__': 
     main() 
