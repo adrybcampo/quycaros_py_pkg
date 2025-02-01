@@ -11,29 +11,32 @@ class MainControl(Node):
     def __init__(self): 
 
         super().__init__('main_control') 
-        self.var2 = ['emotion']
-        self.msg = ControlMsg()
-        self.msg.mode = 1
-        self.msg.mov_x = 0
-        self.msg.mov_y = 0
-        self.msg.emo_x = 3
-        self.msg.emo_y = 4
-        self.msg.cam = 0
-        self.msg.claw = 0
+        self.var2 = ['emotion'] #add variable names with 2 values
+        self.msg = ControlMsg() #Control msg initialization
+        self.msg.mode = 1; self.msg.mov_x = 0; self.msg.mov_y = 0
+        self.msg.emo_x = 3; self.msg.emo_y = 4; self.msg.cam = 0; self.msg.claw = 0
+
+        #publisher and services initialization
         self.publisher_ = self.create_publisher(ControlMsg, '/control_msg', 10) 
         self.client_get1 = self.create_client(GetVariable1, 'get_variable1') 
         self.client_set1 = self.create_client(SetVariable1, 'set_variable1')
         self.client_get2 = self.create_client(GetVariable2, 'get_variable2') 
         self.client_set2 = self.create_client(SetVariable2, 'set_variable2') 
-        self.get_logger().info("main control node is running")
+        self.get_logger().info("Main Control Node is running")
+
+        #Socket initialization
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind(("localhost", 12345)) 
         self.sock.listen()
         self.conn, self.addr = self.sock.accept()  
         self.get_logger().info('Socket connection established')
+
+        #send connection verification
         self.conn.sendall(b'ping')
         self.socket_listener()
+
+        #keep checking for incoming socket connections
         self.timer_ = self.create_timer(10.0, self.check_socket_connection)
 
     def check_socket_connection(self):

@@ -11,8 +11,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     while True:
         instr = input("Enter instruction: ")
         s.sendall(instr.encode('utf-8'))
-        print("sent:",instr)
+        print("Instruction sent: ",instr)
         data = s.recv(1024).decode('utf-8')
         while (data == 'ping'):
             data = s.recv(1024).decode('utf-8')
-        print("Received ",str(data))
+        print("Received: ",str(data))

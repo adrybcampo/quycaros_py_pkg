@@ -21,11 +21,6 @@ def generate_launch_description():
         ), 
         Node( 
             package='quycaros_py_pkg', 
-            executable='video_capture', 
-            name='video_capture' 
-        ), 
-        Node( 
-            package='quycaros_py_pkg', 
             executable='navigation', 
             name='navigation' 
         ), 

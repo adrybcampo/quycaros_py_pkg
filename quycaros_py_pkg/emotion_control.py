@@ -18,13 +18,15 @@ class EmotionControl(Node):
 
  
     def listener_callback(self, msg): 
-        self.new_emotion = [msg.emo_x, msg.emo_y]
-        self.calculate_animation()
+        
         if (self.claw_state != msg.claw):
             data = '<EM:c(' + msg.claw + ')>'
             data_bytes = data.encode('utf-8')
             self.serial_coms.write(data_bytes)
             self.claw_state = msg.claw
+
+        self.new_emotion = [msg.emo_x, msg.emo_y]
+        self.calculate_animation()
 
 
     def calculate_animation(self):

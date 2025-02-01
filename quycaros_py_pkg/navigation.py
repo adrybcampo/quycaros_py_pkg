@@ -8,10 +8,6 @@ class Navigation(Node):
     def __init__(self): 
         super().__init__('emotion_control') 
         self.subscription = self.create_subscription(ControlMsg, '/control_msg', self.listener_callback, 10) 
-        self.current_emotion = [3,4]
-        self.new_emotion = [0,0]
-        self.animation = ""
-        self.claw_state = 0
         self.get_logger().info("navigation node is running")
         self.serial_coms = serial.Serial('/dev/ttyUSB0', 9600)
 
