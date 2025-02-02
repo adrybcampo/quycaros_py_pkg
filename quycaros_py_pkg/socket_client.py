@@ -1,7 +1,7 @@
 import socket
 import sys
 
-HOST = "localhost"  # The server's hostname or IP address
+HOST = "192.168.211.125"  # The server's hostname or IP address
 PORT = 12345  # The port used by the server
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

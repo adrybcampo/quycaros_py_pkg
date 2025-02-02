@@ -27,7 +27,7 @@ class MainControl(Node):
         #Socket initialization
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind(("localhost", 12345)) 
+        self.sock.bind(("192.168.211.125", 12345)) 
         self.sock.listen()
         self.conn, self.addr = self.sock.accept()  
         self.get_logger().info('Socket connection established')
@@ -119,6 +119,7 @@ class MainControl(Node):
                 match variable_name:
                     case 'cam_state':
                         self.msg.cam = int(value)
+                        # subprocess call(["rosnode", "kill", "my_node"], shell=True)
                     case 'claw_state':
                         self.msg.claw = int(value)
                     case 'mode':
