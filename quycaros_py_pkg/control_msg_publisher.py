@@ -22,7 +22,6 @@ class ControlMsgPublisherNode(Node):
           msg.mov_y = 0
           msg.emo_x = random.choice(list1)
           msg.emo_y = random.choice(list1)
-          msg.cam = False
           self.control_msg_publisher_.publish(msg)
           self.get_logger().info("message published: " + str(msg))
 	

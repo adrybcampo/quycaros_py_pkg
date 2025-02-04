@@ -14,7 +14,6 @@ class StatesServer(Node):
         self.get_logger().info("States Server Node is running!")
         self.variables = { 
             'emotion': [3,4], 
-            'cam_state': 0,
             'claw_state': 0, 
             'mode': 1
         } 

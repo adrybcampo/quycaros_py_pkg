@@ -4,6 +4,7 @@ from quycaros_pkg.srv import GetVariable1, SetVariable1, SetVariable2, GetVariab
 from quycaros_pkg.msg import ControlMsg
 import socket 
 from functools import partial
+from subprocess import call
 
 
 class MainControl(Node): 
@@ -14,7 +15,7 @@ class MainControl(Node):
         self.var2 = ['emotion'] #add variable names with 2 values
         self.msg = ControlMsg() #Control msg initialization
         self.msg.mode = 1; self.msg.mov_x = 0; self.msg.mov_y = 0
-        self.msg.emo_x = 3; self.msg.emo_y = 4; self.msg.cam = 0; self.msg.claw = 0
+        self.msg.emo_x = 3; self.msg.emo_y = 4; self.msg.claw = 0
 
         #publisher and services initialization
         self.publisher_ = self.create_publisher(ControlMsg, '/control_msg', 10) 
@@ -25,9 +26,11 @@ class MainControl(Node):
         self.get_logger().info("Main Control Node is running")
 
         #Socket initialization
+        self.declare_parameter("Host", "192.168.211.211")
+        self.host = self.get_parameter('Host').get_parameter_value().string_value
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind(("192.168.211.125", 12345)) 
+        self.sock.bind((self.host, 12345)) 
         self.sock.listen()
         self.conn, self.addr = self.sock.accept()  
         self.get_logger().info('Socket connection established')
@@ -117,9 +120,6 @@ class MainControl(Node):
             response = future.result()
             if response.success:  
                 match variable_name:
-                    case 'cam_state':
-                        self.msg.cam = int(value)
-                        # subprocess call(["rosnode", "kill", "my_node"], shell=True)
                     case 'claw_state':
                         self.msg.claw = int(value)
                     case 'mode':
